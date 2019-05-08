@@ -17,13 +17,15 @@
 */ 
 
 // creating GameObject constructor function 
-function GameObject (createdAt,name,dimensions) {
-  this.createdAt = createdAt;
-  this.name = name;
-  this.dimensions = dimensions;
-  this.destroy = function() {
-    return `${this.name} was removed from the game.`;
-  }
+function GameObject (attributes) {
+  this.createdAt = attributes.createdAt;
+  this.name = attributes.name;
+  this.dimensions = attributes.dimensions;
+}
+
+// creating "destroy" method for "GameObject" constructor function
+GameObject.prototype.destroy = function() {
+  return `${this.name} was removed from the game.`;
 }
 
 /*
@@ -34,13 +36,18 @@ function GameObject (createdAt,name,dimensions) {
 */
 
 // creating CharacterStats constructor function 
-function CharacterStats (healthPoints) {
-  this.healthPoints = healthPoints;
-  this.takeDamage = function() {
-    return `${this.name} took damage.`;
-  }
-  // inheriting GameObject's properties via Object.create
-  Object.create(GameObject);
+function CharacterStats (charAttributes) {
+  // inheriting GameObject's properties via call method
+  GameObject.call(this, charAttributes);
+  this.healthPoints = charAttributes.healthPoints;
+}
+
+// inheriting GameObject's prototype methods via Object.create
+CharacterStats.prototype = Object.create(GameObject.prototype);
+
+// creating prototype method "takeDamage" for "CharacterStats" constructor function
+CharacterStats.prototype.takeDamage = function() {
+  return `${this.name} took damage.`;
 }
 
 /*
@@ -54,11 +61,19 @@ function CharacterStats (healthPoints) {
 */
  
 
-function Humanoid (team,weapons,language) {
-  this.team = team;
-  this.weapons = weapons;
-  this.language = language;
-  Object.create(CharacterStats);
+function Humanoid (humanoidAttributes) {
+  CharacterStats.call(this, humanoidAttributes);
+  this.team = humanoidAttributes.team;
+  this.weapons = humanoidAttributes.weapons;
+  this.language = humanoidAttributes.language;
+}
+
+ // inheriting CharacterStats's prototype methods via Object.create
+ Humanoid.prototype = Object.create(CharacterStats.prototype);
+
+// creating prototype method "Greet" for "Humanoid" constructor function
+Humanoid.prototype.greet = function() {
+  return `${this.name} offers a greeting in ${this.language}.`
 }
 
 /*
@@ -69,7 +84,7 @@ function Humanoid (team,weapons,language) {
 
 // Test you work by un-commenting these 3 objects and the list of console logs below:
 
-/*
+
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -130,7 +145,7 @@ function Humanoid (team,weapons,language) {
   console.log(archer.greet()); // Lilith offers a greeting in Elvish.
   console.log(mage.takeDamage()); // Bruce took damage.
   console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
-*/
+
 
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
